@@ -77,11 +77,15 @@ def add_notebook_step(
     Add a new step to a notebook.
 
     Args:
+        input (CreateNotebookStep): The input data containing the order ID for the new step.
         notebook_id (str): The unique identifier for the notebook.
         notebook_service (NotebookService): The service handling notebook steps.
 
     Returns:
-        The updated notebook with the new step added.
+        The newly created notebook step.
+
+    Raises:
+        HTTPException: If the notebook already has 100 steps.
     """
     notebook_step = notebook_service.add_notebook_step(input.order_id, notebook_id)
     return NotebookStepResponse(**notebook_step.dict())
