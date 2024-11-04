@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi.testclient import TestClient
 
-from src.api.notebook.schemas import NotebookResponse
+from src.api.notebook.schemas import NotebookResponse, NotebookStepResponse
 from src.api.notebook.service import NotebookService
 from src.main import app
 
@@ -90,3 +90,22 @@ def test_get_notebook_by_id_not_found(mock_notebook_service, override_dependency
     assert response.json() == {"detail": "Notebook not found"}
 
     mock_notebook_service.get_notebook_by_id.assert_called_once_with("999")
+
+
+def test_add_step_to_notebook(mock_notebook_service, override_dependency):
+    """Test the POST /notebooks/{notebook_id}/steps route"""
+    mock_notebook_service.add_notebook_step.return_value = NotebookStepResponse(
+        step_id=1, order_id=1, notebook_id="1"
+    )
+
+    step_data = {"order_id": 1}
+
+    response = client.post(f"/notebooks/1/steps/", json=step_data)
+
+    assert response.status_code == 201
+    response_data = response.json()
+    assert response_data["order_id"] == step_data["order_id"]
+
+    mock_notebook_service.add_notebook_step.assert_called_once_with(
+        step_data["order_id"], "1"
+    )

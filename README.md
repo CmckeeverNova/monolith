@@ -21,3 +21,8 @@ curl -X GET http://localhost:8000/notebooks/
 ```bash
 curl -X GET http://localhost:8000/notebooks/INSERT_ID_HERE/
 ```
+
+### Adding a new step to a notebook using the API
+```bash
+curl -X POST http://localhost:8000/notebooks/INSERT_ID_HERE/steps -d '{"order_id": "1"}' -H 'Content-Type: application/json'
+```

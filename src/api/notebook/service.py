@@ -1,10 +1,10 @@
 import logging
 import uuid
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from sqlmodel import Session, select
 
-from src.api.notebook.models import Notebook
+from src.api.notebook.models import Notebook, NotebookStep
 from src.db.database import get_session
 
 
@@ -67,3 +67,25 @@ class NotebookService:
         self.session.refresh(notebook)
 
         return notebook
+
+    def add_notebook_step(self, order_id: int, notebook_id: str) -> NotebookStep:
+        query = select(NotebookStep).where(NotebookStep.notebook_id == notebook_id)
+        steps = self.session.exec(query).all()
+
+        if len(steps) >= 100:
+            raise HTTPException(
+                status_code=400, detail="Cannot exceed 100 steps per notebook."
+            )
+        # Could be better to just check in the last step_id in the table is 100?
+
+        new_step = NotebookStep(
+            order_id=order_id,
+            notebook_id=notebook_id,
+        )
+
+        self.session.add(new_step)
+        self.session.commit()
+
+        self.session.refresh(new_step)
+
+        return new_step

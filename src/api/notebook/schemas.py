@@ -16,3 +16,21 @@ class NotebookResponse(BaseModel):
 
     id: str
     name: str
+
+
+class CreateNotebookStep(BaseModel):
+    """
+    Schema for notebook step creation input.
+    """
+
+    order_id: int
+
+
+class NotebookStepResponse(BaseModel):
+    """
+    Schema for notebook step output representation.
+    """
+
+    step_id: int
+    order_id: int
+    notebook_id: str
