@@ -98,7 +98,7 @@ def test_get_notebook_by_id_not_found(mock_notebook_service, override_dependency
     mock_notebook_service.get_notebook_by_id.assert_called_once_with("999")
 
 
-def test_add_step_to_notebook(mock_notebook_service, override_dependency):
+def test_add_step_to_notebook_success(mock_notebook_service, override_dependency):
     """Test the POST /notebooks/{notebook_id}/steps route"""
     mock_notebook_service.add_notebook_step.return_value = NotebookStepResponse(
         step_id=1, order_id=1, notebook_id="1"
