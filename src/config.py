@@ -1,3 +1,4 @@
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 
@@ -16,15 +17,7 @@ class Settings(BaseSettings):
     ENV: str = "development"
     DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5434/notebook"
 
-    class Config:
-        """
-        Configuration for the Settings class.
-
-        Attributes:
-            env_file (str): The name of the environment file to load variables from.
-        """
-
-        env_file = f".development.env"
+    model_config = ConfigDict(env_file=".development.env")
 
 
 settings = Settings()

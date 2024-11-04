@@ -82,7 +82,8 @@ class NotebookService:
         # Ideally we would slot the new step in the correct order, but for now we'll make sure the order_id is unique
         if any(step.order_id == order_id for step in steps):
             raise HTTPException(
-                status_code=400, detail=f"Order ID {order_id} already exists in this notebook."
+                status_code=400,
+                detail=f"Order ID {order_id} already exists in this notebook.",
             )
 
         new_step = NotebookStep(

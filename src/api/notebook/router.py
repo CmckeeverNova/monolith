@@ -113,7 +113,7 @@ def reorder_notebook_steps(
 
     Returns:
         List[NotebookStep]: The list of steps with updated order.
-    
+
     Raises:
         HTTPException: If there are duplicate order IDs in the request.
     """
