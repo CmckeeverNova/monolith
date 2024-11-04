@@ -1,10 +1,16 @@
+import logging
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 
+from src.api.notebook.models import NotebookStep
 from src.api.notebook.schemas import (
     CreateNotebook,
     CreateNotebookStep,
     NotebookResponse,
     NotebookStepResponse,
+    ReorderStepsRequest,
+    ReorderStepsResponse,
 )
 from src.api.notebook.service import NotebookService
 
@@ -88,4 +94,34 @@ def add_notebook_step(
         HTTPException: If the notebook already has 100 steps.
     """
     notebook_step = notebook_service.add_notebook_step(input.order_id, notebook_id)
-    return NotebookStepResponse(**notebook_step.dict())
+    return NotebookStepResponse(**notebook_step.model_dump())
+
+
+@router.put("/{notebook_id}/steps/reorder", response_model=ReorderStepsResponse)
+def reorder_notebook_steps(
+    notebook_id: str,
+    reorder_request: ReorderStepsRequest,
+    notebook_service: NotebookService = Depends(),
+):
+    """
+    Reorder steps within a notebook based on the new order provided.
+
+    Args:
+        notebook_id (str): The ID of the notebook.
+        reorder_request (ReorderStepsRequest): The new ordering of steps.
+        notebook_service (NotebookService): The service handling notebook steps.
+
+    Returns:
+        List[NotebookStep]: The list of steps with updated order.
+    
+    Raises:
+        HTTPException: If there are duplicate order IDs in the request.
+    """
+
+    reordered_steps = notebook_service.reorder_notebook_steps(
+        reorder_request.steps, notebook_id
+    )
+    response = [NotebookStepResponse(**step.model_dump()) for step in reordered_steps]
+
+    logging.error(response)
+    return ReorderStepsResponse(steps=response)

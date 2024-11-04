@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import BaseModel
 
 
@@ -34,3 +36,19 @@ class NotebookStepResponse(BaseModel):
     step_id: int
     order_id: int
     notebook_id: str
+
+
+class ReorderStepsRequest(BaseModel):
+    """
+    Schema for reordering notebook steps request.
+    """
+
+    steps: List[dict]
+
+
+class ReorderStepsResponse(BaseModel):
+    """
+    Schema for reordering notebook steps response.
+    """
+
+    steps: List[NotebookStepResponse]

@@ -1,10 +1,16 @@
 import datetime
+import logging
 from unittest.mock import MagicMock
 
 import pytest
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
-from src.api.notebook.schemas import NotebookResponse, NotebookStepResponse
+from src.api.notebook.schemas import (
+    NotebookResponse,
+    NotebookStepResponse,
+    ReorderStepsRequest,
+)
 from src.api.notebook.service import NotebookService
 from src.main import app
 
@@ -108,4 +114,70 @@ def test_add_step_to_notebook(mock_notebook_service, override_dependency):
 
     mock_notebook_service.add_notebook_step.assert_called_once_with(
         step_data["order_id"], "1"
+    )
+
+
+def test_reorder_steps_in_notebook_success(mock_notebook_service, override_dependency):
+    """Test successful reordering of notebook steps"""
+    notebook_id = "1"
+    reorder_payload = ReorderStepsRequest(
+        steps=[
+            {"step_id": 1, "order_id": 2},
+            {"step_id": 2, "order_id": 3},
+            {"step_id": 3, "order_id": 1},
+        ]
+    )
+
+    expected_response = [
+        NotebookStepResponse(step_id=1, order_id=1, notebook_id="1"),
+        NotebookStepResponse(step_id=2, order_id=2, notebook_id="1"),
+        NotebookStepResponse(step_id=3, order_id=3, notebook_id="1"),
+    ]
+
+    mock_notebook_service.reorder_notebook_steps.return_value = expected_response
+
+    response = client.put(
+        f"/notebooks/{notebook_id}/steps/reorder", json=reorder_payload.model_dump()
+    )
+
+    assert response.status_code == 200
+    response_data = response.json()
+    expected_response_data = {
+        "steps": [step.model_dump() for step in expected_response]
+    }
+
+    assert response_data == expected_response_data
+
+    mock_notebook_service.reorder_notebook_steps.assert_called_once_with(
+        reorder_payload.steps, notebook_id
+    )
+
+
+def test_reorder_steps_in_notebook_failure_duplicate_order_id(
+    mock_notebook_service, override_dependency
+):
+    """Test failure for duplicate order IDs in reordering notebook steps"""
+    notebook_id = "1"
+    reorder_payload = ReorderStepsRequest(
+        steps=[
+            {"step_id": 1, "order_id": 1},
+            {"step_id": 2, "order_id": 1},
+            {"step_id": 3, "order_id": 3},
+        ]
+    )
+    mock_notebook_service.reorder_notebook_steps.side_effect = HTTPException(
+        status_code=400, detail="Duplicate order IDs found in the provided steps order."
+    )
+
+    response = client.put(
+        f"/notebooks/{notebook_id}/steps/reorder", json=reorder_payload.model_dump()
+    )
+
+    assert response.status_code == 400
+    assert response.json() == {
+        "detail": "Duplicate order IDs found in the provided steps order."
+    }
+
+    mock_notebook_service.reorder_notebook_steps.assert_called_once_with(
+        reorder_payload.steps, notebook_id
     )
