@@ -1,8 +1,11 @@
-from fastapi import Depends
-from src.db.database import get_session
-from src.api.notebook.models import Notebook
-from sqlmodel import select, Session
+import logging
 import uuid
+
+from fastapi import Depends
+from sqlmodel import Session, select
+
+from src.api.notebook.models import Notebook
+from src.db.database import get_session
 
 
 class NotebookService:
@@ -58,13 +61,9 @@ class NotebookService:
             Notebook: The newly created notebook with its generated ID.
         """
         with self.session.begin():
-            notebook = Notebook(
-                id=str(uuid.uuid4()),
-                name=name
-            )
+            notebook = Notebook(id=str(uuid.uuid4()), name=name)
             self.session.add(notebook)
 
         self.session.refresh(notebook)
 
         return notebook
-

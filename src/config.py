@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     """
 
     ENV: str = "development"
-    DATABASE_URL: str = "sqlite:///:memory:"
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5434/notebook"
 
     class Config:
         """
@@ -23,6 +23,7 @@ class Settings(BaseSettings):
         Attributes:
             env_file (str): The name of the environment file to load variables from.
         """
+
         env_file = f".development.env"
 
 

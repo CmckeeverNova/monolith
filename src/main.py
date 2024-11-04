@@ -14,9 +14,7 @@ def create_app() -> FastAPI:
         FastAPI: The configured FastAPI application instance.
     """
     app = FastAPI(
-        title="Notebook API",
-        description="API for managing notebooks",
-        version="1.0.0"
+        title="Notebook API", description="API for managing notebooks", version="1.0.0"
     )
 
     app.include_router(notebook_router, prefix="/notebooks", tags=["notebooks"])
@@ -28,4 +26,5 @@ app = create_app()
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

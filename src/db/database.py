@@ -1,4 +1,5 @@
-from sqlmodel import create_engine, Session
+from sqlmodel import Session, create_engine
+
 from src.config import settings
 
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
