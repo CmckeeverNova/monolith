@@ -126,7 +126,6 @@ class NotebookService:
                 detail=f"Missing valid step IDs in the new order: {missing_steps}",
             )
 
-        # Update the order_id based on the new sequence
         for new_step in steps_order:
             step_id, new_order_id = new_step["step_id"], new_step["order_id"]
             if step_id in current_steps:
@@ -135,13 +134,5 @@ class NotebookService:
                     tz=datetime.timezone.utc
                 )
 
-        # Persist changes
         self.session.commit()
-
-        # Optional: Log the reordered steps
-        logging.debug(
-            f"Reordered steps for notebook {notebook_id}: {[step.step_id for step in current_steps.values()]}"
-        )
-
-        # Return the reordered steps
         return list(current_steps.values())

@@ -41,5 +41,7 @@ curl -X PUT http://localhost:8000/notebooks/INSERT_ID_HERE/steps/reorder \
 ```
 
 #### Notes
-- dict() is now deprecated so changed to model_dump()
-- Had to change some versions in the poetry.lock file in order to get it working
+- dict() is now deprecated so changed to model_dump().
+- Had to change some versions in the poetry.lock file in order to get it working, including the .lock file just incase.
+- Ideally I would add more tests, Example: check you can't add more than 100 steps per notebook.
+- Given more time would have added more validation to the existing notebook code.
